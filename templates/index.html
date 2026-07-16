@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Fake News Detector</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📰 AI Fake News Detector</h1>
+
+<form action="/predict" method="POST">
+
+<textarea
+name="news"
+placeholder="Paste any news article here..."
+required>{{ news if news else "" }}</textarea>
+
+<button type="submit">
+🔍 Detect News
+</button>
+
+</form>
+
+{% if prediction %}
+
+<div class="result">
+
+{% if "FAKE" in prediction %}
+
+<h2 class="fake">{{ prediction }}</h2>
+
+{% else %}
+
+<h2 class="real">{{ prediction }}</h2>
+
+{% endif %}
+
+<h3>
+Confidence : {{ confidence }}%
+</h3>
+
+<hr>
+
+<h2>🤖 AI Explanation</h2>
+
+<p style="white-space: pre-line;">
+{{ explanation }}
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+
+</html>
