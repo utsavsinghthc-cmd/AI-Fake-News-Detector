@@ -1,83 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Fake News Detector</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Fake News Detector is a Flask and machine learning web app that classifies news as real or fake with confidence insights.">
+    <title>AI Fake News Detector | Premium AI Fact Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="orb orb-one" aria-hidden="true"></div>
+    <div class="orb orb-two" aria-hidden="true"></div>
 
-<nav class="navbar">
-  <div class="logo">🧠 AI Fake News Detector</div>
-  <div class="nav-links">
-    <a href="#">Home</a>
-    <a href="#detector">Detector</a>
-    <a href="#about">About</a>
-  </div>
-</nav>
+    <header class="site-header fade-in">
+        <a class="brand" href="/" aria-label="AI Fake News Detector home">
+            <span class="brand-mark">AI</span>
+            <span>Fake News Detector</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+            <a href="#detector">Detector</a>
+            <a href="#fact-check">Fact Check</a>
+            <a href="#about">Project</a>
+        </nav>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark and light theme" data-theme-toggle>
+            <span class="theme-icon">☾</span>
+            <span class="theme-label">Dark</span>
+        </button>
+    </header>
 
-<section class="hero">
-  <h1>Detect Fake News with AI</h1>
-  <p>Machine Learning powered fake news detector built using Flask & Scikit-learn.</p>
-</section>
+    <main>
+        <section class="hero section-shell fade-in">
+            <div class="hero-content">
+                <p class="eyebrow">IBM PBEL Project • Machine Learning Intelligence</p>
+                <h1>AI Fake News Detector</h1>
+                <p class="hero-subtitle">Detect misinformation signals in seconds with a trained Scikit-learn pipeline, confidence scoring, and human-friendly explainability.</p>
+                <p class="hero-copy">Paste a news article, headline, or social post to classify it as <strong>REAL</strong> or <strong>FAKE</strong>. The Flask backend and trained ML model remain intact while this interface adds a premium AI SaaS experience.</p>
+                <div class="hero-actions">
+                    <a class="primary-link" href="#detector">Start Detecting</a>
+                    <a class="secondary-link" href="#fact-check">Trusted Sources</a>
+                </div>
+            </div>
+            <div class="hero-panel glass-card" aria-label="Project highlights">
+                <div class="metric"><span>99.31%</span><small>Model accuracy</small></div>
+                <div class="metric"><span>TF-IDF</span><small>Feature extraction</small></div>
+                <div class="metric"><span>Flask</span><small>Production-ready UI</small></div>
+            </div>
+        </section>
 
-<div class="container" id="detector">
-  <div class="card">
-    <form action="/predict" method="POST">
-      <textarea name="news" placeholder="Paste your news article here..." required>{{ news if news else "" }}</textarea>
+        <section id="detector" class="detector-grid section-shell">
+            <article class="input-card glass-card card-rise">
+                <div class="card-heading">
+                    <div>
+                        <p class="eyebrow">News Input</p>
+                        <h2>Analyze an article</h2>
+                    </div>
+                    <span class="shortcut">Ctrl/⌘ + Enter</span>
+                </div>
 
-      <div class="actions">
-        <button type="submit">🔍 Detect News</button>
-        <button type="button" onclick="document.querySelector('textarea').value=''">🗑 Clear</button>
-      </div>
-    </form>
-  </div>
+                <form id="news-form" action="/predict" method="POST" novalidate>
+                    <label for="news" class="sr-only">Paste any news article here</label>
+                    <textarea id="news" name="news" placeholder="Paste any news article, headline, or claim here..." minlength="10" required>{{ news if news else "" }}</textarea>
+                    <p id="input-error" class="input-error" role="alert" aria-live="polite"></p>
+                    <div class="form-actions">
+                        <button id="detect-btn" class="detect-button" type="submit">
+                            <span class="button-text">Detect News</span>
+                            <span class="spinner" aria-hidden="true"></span>
+                        </button>
+                        <button id="clear-btn" class="ghost-button" type="button">Clear Text</button>
+                    </div>
+                </form>
+            </article>
 
-{% if prediction %}
-<div class="card result-card">
+            <aside class="stats-card glass-card card-rise">
+                <p class="eyebrow">Live Statistics</p>
+                <h2>Text intelligence</h2>
+                <div class="stats-list">
+                    <div><span id="word-count">0</span><small>Word Count</small></div>
+                    <div><span id="char-count">0</span><small>Character Count</small></div>
+                    <div><span id="reading-time">0 min</span><small>Reading Time</small></div>
+                    <div><span id="language-detected">Unknown</span><small>Language</small></div>
+                </div>
+            </aside>
+        </section>
 
-<h2 class="{% if 'FAKE' in prediction %}fake{% else %}real{% endif %}">
-{{ prediction }}
-</h2>
+        <section class="results-grid section-shell" aria-live="polite">
+            <article id="prediction-card" class="prediction-card glass-card card-rise {% if prediction %}is-visible{% endif %}">
+                <p class="eyebrow">Prediction</p>
+                {% if prediction %}
+                    {% set is_fake = "FAKE" in prediction %}
+                    <h2 class="prediction-label {{ 'fake' if is_fake else 'real' }}">{{ prediction }}</h2>
+                    <p class="confidence-copy">Confidence Score</p>
+                    <div class="progress-track" aria-label="Confidence score {{ confidence }} percent">
+                        <div class="progress-bar {{ 'fake-bg' if is_fake else 'real-bg' }}" style="--confidence: {{ confidence }}%;"></div>
+                    </div>
+                    <strong class="confidence-value">{{ confidence }}%</strong>
+                    <div class="result-actions">
+                        <button id="copy-result" class="ghost-button" type="button">Copy Result</button>
+                        <button id="download-pdf" class="ghost-button" type="button">Download PDF</button>
+                    </div>
+                {% else %}
+                    <h2 class="prediction-label neutral">Awaiting analysis</h2>
+                    <p class="muted">Your prediction, confidence score, and export actions will appear here after detection.</p>
+                {% endif %}
+            </article>
 
-<h3>Confidence : {{ confidence }}%</h3>
+            <article id="explanation-card" class="explanation-card glass-card card-rise {% if prediction %}is-visible{% endif %}">
+                <p class="eyebrow">AI Explanation</p>
+                <h2>Why this result?</h2>
+                {% if explanation %}
+                    <p class="explanation-text">{{ explanation }}</p>
+                {% else %}
+                    <p class="muted">The model explanation will summarize linguistic patterns that influenced the classification.</p>
+                {% endif %}
+            </article>
+        </section>
 
-<div class="progress">
-<div class="progress-fill" style="width:{{ confidence }}%"></div>
-</div>
+        <section class="section-shell history-section glass-card card-rise">
+            <div class="card-heading">
+                <div>
+                    <p class="eyebrow">Session History</p>
+                    <h2>Recent checks</h2>
+                </div>
+                <button id="clear-history" class="ghost-button compact" type="button">Clear History</button>
+            </div>
+            <div id="history-list" class="history-list empty">No predictions in this browser session yet.</div>
+        </section>
 
-<h3>🤖 AI Explanation</h3>
-<p style="white-space:pre-line">{{ explanation }}</p>
+        <section id="fact-check" class="section-shell fact-section">
+            <p class="eyebrow">Trusted Verification</p>
+            <h2>Fact-check before sharing</h2>
+            <div class="fact-grid">
+                <a class="fact-card glass-card" href="https://www.reuters.com/fact-check/" target="_blank" rel="noopener noreferrer"><span>Reuters</span><small>Global fact-check desk</small></a>
+                <a class="fact-card glass-card" href="https://apnews.com/hub/ap-fact-check" target="_blank" rel="noopener noreferrer"><span>AP Fact Check</span><small>Evidence-based reporting</small></a>
+                <a class="fact-card glass-card" href="https://pib.gov.in/factcheck.aspx" target="_blank" rel="noopener noreferrer"><span>PIB Fact Check</span><small>Government of India claims</small></a>
+                <a class="fact-card glass-card" href="https://toolbox.google.com/factcheck/explorer" target="_blank" rel="noopener noreferrer"><span>Google Explorer</span><small>Search fact-check claims</small></a>
+            </div>
+        </section>
+    </main>
 
-<hr>
+    <footer id="about" class="site-footer section-shell">
+        <p>Built by <strong>Utsav Singh</strong> for the <strong>IBM PBEL Project</strong>.</p>
+        <div class="footer-links">
+            <a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://skillsbuild.org/" target="_blank" rel="noopener noreferrer">IBM PBEL Project</a>
+        </div>
+    </footer>
 
-<div class="stats">
-<div><strong>Words</strong><br>{{ word_count }}</div>
-<div><strong>Characters</strong><br>{{ character_count }}</div>
-</div>
-
-{% endif %}
-</div>
-
-<div class="card">
-<h2>🔗 Trusted Fact Check Sources</h2>
-
-<ul>
-<li><a href="https://www.reuters.com/fact-check/" target="_blank">Reuters Fact Check</a></li>
-<li><a href="https://apnews.com/hub/ap-fact-check" target="_blank">AP Fact Check</a></li>
-<li><a href="https://factcheck.pib.gov.in/" target="_blank">PIB Fact Check</a></li>
-<li><a href="https://toolbox.google.com/factcheck/explorer" target="_blank">Google Fact Check Explorer</a></li>
-</ul>
-
-</div>
-
-</div>
-
-<footer id="about">
-Developed by <strong>Utsav Singh</strong><br>
-IBM PBEL Virtual Internship Project
-</footer>
-
+    <script>
+        window.__PREDICTION__ = {{ {'prediction': prediction|default('', true), 'confidence': confidence|default('', true), 'explanation': explanation|default('', true), 'news': news|default('', true)}|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
