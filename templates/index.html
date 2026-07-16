@@ -7,30 +7,41 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<header class="header">
-  <h1>🧠 AI Fake News Detector</h1>
-  <p>Machine Learning based Fake News Detection</p>
-</header>
 
-<main class="container">
-<div class="card">
-<form action="/predict" method="POST">
-<textarea name="news" placeholder="Paste your news here..." required>{{ news if news else "" }}</textarea>
+<nav class="navbar">
+  <div class="logo">🧠 AI Fake News Detector</div>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#detector">Detector</a>
+    <a href="#about">About</a>
+  </div>
+</nav>
 
-<div class="buttons">
-<button type="submit">🔍 Detect News</button>
-<button type="button" onclick="document.querySelector('textarea').value=''">🗑 Clear</button>
-</div>
-</form>
-</div>
+<section class="hero">
+  <h1>Detect Fake News with AI</h1>
+  <p>Machine Learning powered fake news detector built using Flask & Scikit-learn.</p>
+</section>
+
+<div class="container" id="detector">
+  <div class="card">
+    <form action="/predict" method="POST">
+      <textarea name="news" placeholder="Paste your news article here..." required>{{ news if news else "" }}</textarea>
+
+      <div class="actions">
+        <button type="submit">🔍 Detect News</button>
+        <button type="button" onclick="document.querySelector('textarea').value=''">🗑 Clear</button>
+      </div>
+    </form>
+  </div>
 
 {% if prediction %}
-<div class="card">
+<div class="card result-card">
+
 <h2 class="{% if 'FAKE' in prediction %}fake{% else %}real{% endif %}">
 {{ prediction }}
 </h2>
 
-<p><strong>Confidence:</strong> {{ confidence }}%</p>
+<h3>Confidence : {{ confidence }}%</h3>
 
 <div class="progress">
 <div class="progress-fill" style="width:{{ confidence }}%"></div>
@@ -41,25 +52,32 @@
 
 <hr>
 
-<h3>📊 Statistics</h3>
-<p>Words : {{ word_count }}</p>
-<p>Characters : {{ character_count }}</p>
+<div class="stats">
+<div><strong>Words</strong><br>{{ word_count }}</div>
+<div><strong>Characters</strong><br>{{ character_count }}</div>
 </div>
-{% endif %}
 
-<section class="card">
-<h2>🔗 Fact Check Resources</h2>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>🔗 Trusted Fact Check Sources</h2>
+
 <ul>
-<li><a href="https://www.reuters.com/fact-check/" target="_blank">Reuters</a></li>
+<li><a href="https://www.reuters.com/fact-check/" target="_blank">Reuters Fact Check</a></li>
 <li><a href="https://apnews.com/hub/ap-fact-check" target="_blank">AP Fact Check</a></li>
 <li><a href="https://factcheck.pib.gov.in/" target="_blank">PIB Fact Check</a></li>
 <li><a href="https://toolbox.google.com/factcheck/explorer" target="_blank">Google Fact Check Explorer</a></li>
 </ul>
-</section>
-</main>
 
-<footer>
-Developed by <strong>Utsav Singh</strong> | IBM PBEL Project
+</div>
+
+</div>
+
+<footer id="about">
+Developed by <strong>Utsav Singh</strong><br>
+IBM PBEL Virtual Internship Project
 </footer>
+
 </body>
 </html>
