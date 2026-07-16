@@ -1,69 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>AI Fake News Detector</title>
-
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
-
 <body>
+<header class="header">
+  <h1>🧠 AI Fake News Detector</h1>
+  <p>Machine Learning based Fake News Detection</p>
+</header>
 
-<div class="container">
-
-<h1>📰 AI Fake News Detector</h1>
-
+<main class="container">
+<div class="card">
 <form action="/predict" method="POST">
+<textarea name="news" placeholder="Paste your news here..." required>{{ news if news else "" }}</textarea>
 
-<textarea
-name="news"
-placeholder="Paste any news article here..."
-required>{{ news if news else "" }}</textarea>
-
-<button type="submit">
-🔍 Detect News
-</button>
-
+<div class="buttons">
+<button type="submit">🔍 Detect News</button>
+<button type="button" onclick="document.querySelector('textarea').value=''">🗑 Clear</button>
+</div>
 </form>
+</div>
 
 {% if prediction %}
+<div class="card">
+<h2 class="{% if 'FAKE' in prediction %}fake{% else %}real{% endif %}">
+{{ prediction }}
+</h2>
 
-<div class="result">
+<p><strong>Confidence:</strong> {{ confidence }}%</p>
 
-{% if "FAKE" in prediction %}
+<div class="progress">
+<div class="progress-fill" style="width:{{ confidence }}%"></div>
+</div>
 
-<h2 class="fake">{{ prediction }}</h2>
-
-{% else %}
-
-<h2 class="real">{{ prediction }}</h2>
-
-{% endif %}
-
-<h3>
-Confidence : {{ confidence }}%
-</h3>
+<h3>🤖 AI Explanation</h3>
+<p style="white-space:pre-line">{{ explanation }}</p>
 
 <hr>
 
-<h2>🤖 AI Explanation</h2>
-
-<p style="white-space: pre-line;">
-{{ explanation }}
-</p>
-
+<h3>📊 Statistics</h3>
+<p>Words : {{ word_count }}</p>
+<p>Characters : {{ character_count }}</p>
 </div>
-
 {% endif %}
 
-</div>
+<section class="card">
+<h2>🔗 Fact Check Resources</h2>
+<ul>
+<li><a href="https://www.reuters.com/fact-check/" target="_blank">Reuters</a></li>
+<li><a href="https://apnews.com/hub/ap-fact-check" target="_blank">AP Fact Check</a></li>
+<li><a href="https://factcheck.pib.gov.in/" target="_blank">PIB Fact Check</a></li>
+<li><a href="https://toolbox.google.com/factcheck/explorer" target="_blank">Google Fact Check Explorer</a></li>
+</ul>
+</section>
+</main>
 
+<footer>
+Developed by <strong>Utsav Singh</strong> | IBM PBEL Project
+</footer>
 </body>
-
 </html>
